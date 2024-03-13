@@ -1,0 +1,281 @@
+<style>
+
+        #dropdown-container {
+            top: 50px;
+            right: 5%;
+            position: absolute;
+            display: inline-block; /* Keep the button and dropdown content in line */
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            left: 0; /* Position the dropdown to the left */
+            right: auto; /* Reset the right property */
+        }
+
+        #dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            display: block;
+            text-decoration: none;
+        }
+
+        #dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        #navbar {
+            position: relative;
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: right;
+            z-index: 5;
+        }
+        #navbar a {
+           vertical-align: middle;
+        }
+
+        #profile-pic {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        #add-button {
+            position: absolute;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            top: 60px;
+            margin: 10px;
+            font-size: 40px;
+            right: 10px;
+        }
+        #profile-name{
+
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+    .icon {
+        display: grid;
+        position: inherit;
+        cursor: pointer;
+        order: -1;
+        justify-content: start;
+        align-content: stretch;
+        z-index: 2;
+        height: 1px;
+        top: -30px;
+        width: 10px;
+    }
+    .icon span {
+        font-size: 30px;
+    }
+
+    #sidebar {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+    }
+
+    #sidebar a {
+        padding: 15px 25px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+    #sidebar a:hover {
+        color: #f1f1f1;
+    }
+    .profile-container {
+      position: relative;
+      display: inline-block;
+      margin-top: -5px;
+      margin-right: 12px;
+    }
+
+    .profile-image {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .dropdown-box {
+        display: none;
+        position: absolute;
+        top: 120%;
+        left: -250%;
+        transform: translateX(-50%);
+        background-color: #2b2a2a;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 5;
+        width: 200px;
+    }
+
+    .dropdown-link {
+        display: block;
+        padding: 8px;
+        text-decoration: none;
+        color: #fff;
+        transition: background-color 0.3s;
+        display: flex;
+        border-radius: 5px;
+    }
+
+    .dropdown-link:hover {
+      background-color: #313030;
+    }
+    .add-button {
+        color: white;
+        font-size: 100px;
+        text-decoration: none;
+    }
+
+    @keyframes moveSquare {
+      50% {
+        opacity: 1; /* Fade in */
+        transform: translate(
+          calc(var(--moveX)), /* Dynamic horizontal translation */
+          calc(var(--moveY))  /* Dynamic vertical translation */
+        );
+      }
+      100% {
+        opacity: 0; /* Fade out */
+        transform: translate(
+          calc(var(--finalMoveX)), /* Dynamic final horizontal translation */
+          calc(var(--finalMoveY))  /* Dynamic final vertical translation */
+        );
+      }
+    }
+    </style>
+
+<div id="navbar">
+    <div>
+        <label style="position: relative;padding: 10px;top: -5px;">{{username}}</label>
+        <div class="profile-container" id="profileContainer">
+          <img src={{ profile_image }} alt="Profile Image" class="profile-image" onclick="toggleDropdown()">
+          <div class="dropdown-box" id="dropdownBox">
+            <a href="/profile" class="dropdown-link">Profile</a>
+            <a href="/account-settings" class="dropdown-link">Account Settings</a>
+            <a href="/logout" class="dropdown-link">Sign out</a>
+          </div>
+        </div>
+    </div>
+    <div class="icon" onclick="toggleSidebar()">
+        <span>&#9776;</span> <!-- This is the hamburger icon -->
+    </div>
+</div>
+<div id="sidebar">
+    <a href="/">Home</a>
+    {% for item in dropdown_data %}
+        <a href="#" onclick="downloadFile('{{ item['filename'] }}')">{{ item['name'] }}</a>
+    {% endfor %}
+</div>
+
+<script>
+
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        if (sidebar.style.width === "250px") {
+                sidebar.style.width = "0";
+        } else {
+                sidebar.style.width = "250px";
+        }
+    }
+
+    //function toggleDropdown() {
+    //    var dropdownContent = document.getElementById('dropdown-content');
+    //    dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+    //}
+
+    function downloadFile(filename) {
+        // Construct the download URL
+        var downloadUrl = '/download/' + filename;
+
+        // Trigger the download by creating a hidden link and clicking it
+        var hiddenLink = document.createElement('a');
+        hiddenLink.href = downloadUrl;
+        hiddenLink.target = '_blank'; // Open in a new tab/window
+        hiddenLink.download = filename;
+        document.body.appendChild(hiddenLink);
+        hiddenLink.click();
+        document.body.removeChild(hiddenLink);
+    }
+</script>
+
+<script>
+    function addBox() {
+        var container = document.getElementById('container');
+
+        var newBox = document.createElement('div');
+        newBox.className = 'box';
+
+        newBox.innerHTML = '<a href="/create" style="text-decoration: none"><p class="add-button">+</p></a>'
+
+        container.appendChild(newBox);
+    }
+
+
+    function addSidebarLink(text, link) {
+        var container = document.getElementById('sidebar');
+
+
+
+        var linkElement = document.createElement('a');
+        linkElement.href = link;
+        linkElement.textContent = text;
+
+
+        container.appendChild(linkElement);
+    }
+    addSidebarLink("Trans", "https://www.mediafire.com/file/hgykjsmwb8r7iwn/newmain.zip/file")
+    if({{ is_admin }}){
+        addSidebarLink("Create Editor", "/create")
+        addSidebarLink("Users","/users")
+        addBox()
+    }
+
+
+     function toggleDropdown() {
+    var dropdown = document.getElementById('dropdownBox');
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+  }
+
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function (event) {
+    if (!event.target.matches('.profile-image')) {
+      var dropdowns = document.getElementsByClassName('dropdown-box');
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.style.display === 'block') {
+          openDropdown.style.display = 'none';
+        }
+      }
+    }
+  }
+</script>
